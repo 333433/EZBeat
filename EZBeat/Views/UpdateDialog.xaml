@@ -1,0 +1,190 @@
+﻿<Window x:Class="EZBeat.Views.UpdateDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Title="EZBeat Updater"
+        Height="350" Width="500"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterOwner"
+        Topmost="True"
+        ShowInTaskbar="False">
+
+    <Border x:Name="MainBorder"
+            Background="{StaticResource EZBeat.Background.Tertiary}"
+            BorderBrush="{StaticResource EZBeat.Control.Border}"
+            BorderThickness="1"
+            CornerRadius="12"
+            Margin="10"
+            Opacity="0"
+            RenderTransformOrigin="0.5,0.5">
+
+        <Border.RenderTransform>
+            <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
+        </Border.RenderTransform>
+
+        <Border.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard Storyboard="{StaticResource DialogPopIn}"/>
+            </EventTrigger>
+        </Border.Triggers>
+
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.5" Color="Black"/>
+        </Border.Effect>
+
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <ui:SymbolIcon Symbol="ArrowSync24" FontSize="24" Foreground="{StaticResource EZBeat.Accent.Primary}" Margin="0,0,12,0"/>
+                <TextBlock Text="Software Update" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource EZBeat.Foreground.Primary}"/>
+            </StackPanel>
+
+            <!-- CONTENT AREA -->
+            <Grid Grid.Row="1" Margin="0,20">
+
+                <!-- STATE 0: CHECKING -->
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding UiState}" Value="0">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <ui:ProgressRing IsIndeterminate="True" Width="40" Height="40" Foreground="{StaticResource EZBeat.Accent.Primary}"/>
+                    <TextBlock Text="Checking for updates..." Margin="0,15,0,0" Foreground="{StaticResource EZBeat.Foreground.Primary}" FontSize="16"/>
+                </StackPanel>
+
+                <!-- STATE 1: AVAILABLE -->
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding UiState}" Value="1">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="{Binding VersionText}" FontWeight="Bold" FontSize="16" Foreground="{StaticResource EZBeat.Foreground.Primary}" Margin="0,0,0,10"/>
+
+                    <Border Grid.Row="1" Background="{StaticResource EZBeat.Background.Tertiary}" CornerRadius="6" Padding="10">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <TextBlock Text="{Binding Changelog}" TextWrapping="Wrap" Foreground="{StaticResource EZBeat.Foreground.Secondary}"/>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+
+                <!-- STATE 2: UP TO DATE -->
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding UiState}" Value="2">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <ui:SymbolIcon Symbol="CheckmarkCircle48" FontSize="48" Foreground="{StaticResource EZBeat.System.Success}" Margin="0,0,0,15"/>
+                    <TextBlock Text="You are using the latest version." FontSize="16" Foreground="{StaticResource EZBeat.Foreground.Primary}" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- STATE 3: DOWNLOADING -->
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding UiState}" Value="3">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <TextBlock Text="Downloading update..." Margin="0,0,0,10" Foreground="{StaticResource EZBeat.Foreground.Primary}"/>
+                    <ProgressBar Value="{Binding Progress}" Maximum="100" Height="6" Background="{StaticResource EZBeat.Background.Tertiary}" Foreground="{StaticResource EZBeat.Accent.Primary}"/>
+                    <TextBlock Text="{Binding Progress, StringFormat={}{0:0}%}" HorizontalAlignment="Right" Margin="0,5,0,0" Foreground="{StaticResource EZBeat.Foreground.Tertiary}"/>
+                </StackPanel>
+
+                <!-- STATE 4: ERROR -->
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding UiState}" Value="4">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <ui:SymbolIcon Symbol="ErrorCircle24" FontSize="32" Foreground="{StaticResource EZBeat.System.Error}" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                    <TextBlock Text="Update Failed" FontSize="16" FontWeight="Bold" Foreground="{StaticResource EZBeat.Foreground.Primary}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding Changelog}" TextWrapping="Wrap" Margin="0,10,0,0" Foreground="{StaticResource EZBeat.Foreground.Secondary}" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+            </Grid>
+
+            <!-- FOOTER BUTTONS -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+
+                <!-- Cancel / Close Button -->
+                <ui:Button Content="Close" 
+                           Appearance="Secondary" 
+                           Margin="0,0,10,0" 
+                           Cursor="Hand"
+                           Command="{Binding CloseCommand}"
+                           MinWidth="80">
+                    <ui:Button.Style>
+                        <Style TargetType="ui:Button" BasedOn="{StaticResource EZBeat.Button.Primary}">
+                            <!-- Hide Close button while Downloading -->
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding UiState}" Value="3">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ui:Button.Style>
+                </ui:Button>
+
+                <!-- Update Button (Only visible when Update Available) -->
+                <ui:Button Content="Update Now" 
+                           Command="{Binding StartUpdateCommand}"
+                           MinWidth="100">
+                    <ui:Button.Style>
+                        <Style TargetType="ui:Button" BasedOn="{StaticResource EZBeat.Button.Primary}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding UiState}" Value="1">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ui:Button.Style>
+                </ui:Button>
+
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

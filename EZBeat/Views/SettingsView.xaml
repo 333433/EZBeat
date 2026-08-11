@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="EZBeat.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:viewmodels="clr-namespace:EZBeat.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}">
+
+    <UserControl.RenderTransform>
+        <TranslateTransform/>
+    </UserControl.RenderTransform>
+
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard Storyboard="{StaticResource SlideFadeInDown}"/>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <StackPanel Margin="24" DataContext="{Binding Settings}">
+        <TextBlock Text="Download Settings" FontSize="24" FontWeight="Bold" Foreground="{StaticResource EZBeat.Foreground.Primary}"/>
+        <TextBlock Text="Configure where and how your music is saved." Margin="0,4,0,20" Foreground="{StaticResource EZBeat.Foreground.Secondary}"/>
+
+        <!-- Download Location Section -->
+        <TextBlock Text="Download Location" Margin="0,0,0,5" FontWeight="Medium" Foreground="{StaticResource EZBeat.Foreground.Primary}"/>
+        <Grid HorizontalAlignment="Left" Width="500" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <ui:TextBox Text="{Binding DownloadPath}" 
+                        IsReadOnly="True" 
+                        VerticalAlignment="Center"
+                        Margin="0,0,10,0"
+                        Style="{StaticResource EZBeat.TextBox.Default}"/>
+
+            <ui:Button Grid.Column="1" 
+                       Icon="{ui:SymbolIcon Folder24}" 
+                       Content="Browse" 
+                       Appearance="Secondary"
+                       Cursor="Hand"
+                       Command="{Binding BrowseFolderCommand}"/>
+        </Grid>
+
+        <Separator Margin="0,0,0,20" Opacity="0.5"/>
+
+        <!-- Format Options -->
+        <TextBlock Text="Audio Format" Margin="0,0,0,5" FontWeight="Medium" Foreground="{StaticResource EZBeat.Foreground.Primary}"/>
+        <ComboBox MinWidth="250" HorizontalAlignment="Left"
+                  ItemsSource="{Binding Formats}"
+                  SelectedItem="{Binding SelectedFormat, Mode=TwoWay}" />
+
+        <TextBlock Text="Bitrate (for MP3)" Margin="0,16,0,5" FontWeight="Medium" Foreground="{StaticResource EZBeat.Foreground.Primary}"/>
+        <ComboBox MinWidth="250" HorizontalAlignment="Left"
+                  ItemsSource="{Binding Bitrates}"
+                  SelectedItem="{Binding SelectedBitrate, Mode=TwoWay}"
+                  IsEnabled="{Binding IsBitrateEnabled}" />
+
+        <Separator Margin="0,24" Opacity="0.5"/>
+
+        <ui:Button Content="Save Settings" 
+                   Style="{StaticResource EZBeat.Button.Primary}" 
+                   HorizontalAlignment="Left" 
+                   Command="{Binding SaveSettingsCommand}"/>
+
+        <!-- NEW: VERSION INFO AT BOTTOM -->
+        <Grid Margin="0,40,0,0" HorizontalAlignment="Left" Opacity="0.7">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="EZBeat" FontWeight="SemiBold" Foreground="{StaticResource EZBeat.Foreground.Primary}"/>
+                <TextBlock Text=" • " Foreground="{StaticResource EZBeat.Foreground.Tertiary}"/>
+                <TextBlock Text="{Binding AppVersion}" Foreground="{StaticResource EZBeat.Foreground.Secondary}"/>
+            </StackPanel>
+        </Grid>
+
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="EZBeat.Views.WaveformIcon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="40">
+
+    <UserControl.Resources>
+        <!-- The Animation Storyboard -->
+        <Storyboard x:Key="WaveAnimation">
+            <!-- Bar 1 -->
+            <DoubleAnimation Storyboard.TargetName="Bar1Scale" Storyboard.TargetProperty="ScaleY"
+                             From="0.2" To="1.0" Duration="0:0:0.4" AutoReverse="True" RepeatBehavior="Forever"/>
+            <!-- Bar 2 (Slightly slower) -->
+            <DoubleAnimation Storyboard.TargetName="Bar2Scale" Storyboard.TargetProperty="ScaleY"
+                             From="0.2" To="0.8" Duration="0:0:0.5" BeginTime="0:0:0.1" AutoReverse="True" RepeatBehavior="Forever"/>
+            <!-- Bar 3 (Fast) -->
+            <DoubleAnimation Storyboard.TargetName="Bar3Scale" Storyboard.TargetProperty="ScaleY"
+                             From="0.2" To="1.0" Duration="0:0:0.3" AutoReverse="True" RepeatBehavior="Forever"/>
+            <!-- Bar 4 (Slowest) -->
+            <DoubleAnimation Storyboard.TargetName="Bar4Scale" Storyboard.TargetProperty="ScaleY"
+                             From="0.2" To="0.7" Duration="0:0:0.6" BeginTime="0:0:0.2" AutoReverse="True" RepeatBehavior="Forever"/>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Height="20">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+
+            <!-- Bar 1 -->
+            <Rectangle Width="3" Height="20" Margin="1,0" Fill="{StaticResource EZBeat.Accent.Primary}" RenderTransformOrigin="0.5,1.0">
+                <Rectangle.RenderTransform>
+                    <ScaleTransform x:Name="Bar1Scale" ScaleY="0.2"/>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+
+            <!-- Bar 2 -->
+            <Rectangle Width="3" Height="20" Margin="1,0" Fill="{StaticResource EZBeat.Accent.Primary}" RenderTransformOrigin="0.5,1.0">
+                <Rectangle.RenderTransform>
+                    <ScaleTransform x:Name="Bar2Scale" ScaleY="0.2"/>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+
+            <!-- Bar 3 -->
+            <Rectangle Width="3" Height="20" Margin="1,0" Fill="{StaticResource EZBeat.Accent.Primary}" RenderTransformOrigin="0.5,1.0">
+                <Rectangle.RenderTransform>
+                    <ScaleTransform x:Name="Bar3Scale" ScaleY="0.2"/>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+
+            <!-- Bar 4 -->
+            <Rectangle Width="3" Height="20" Margin="1,0" Fill="{StaticResource EZBeat.Accent.Primary}" RenderTransformOrigin="0.5,1.0">
+                <Rectangle.RenderTransform>
+                    <ScaleTransform x:Name="Bar4Scale" ScaleY="0.2"/>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+
+        </StackPanel>
+    </Grid>
+</UserControl>
