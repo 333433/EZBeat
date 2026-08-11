@@ -12,7 +12,7 @@ Namespace EZBeat.Services
         Private ReadOnly _httpClient As HttpClient
 
         ' JSON Format: { "Version": "1.0.1", "DownloadUrl": "https://...", "Changelog": "- Fixes bugs" }
-        Private Const UPDATE_JSON_URL As String = "https://raw.githubusercontent.com/Skweeg/EZBeat/refs/heads/master/version.json"
+        Private Const UPDATE_JSON_URL As String = "https://raw.githubusercontent.com/333433/EZBeat/refs/heads/master/version.json"
 
         Public Sub New()
             _httpClient = New HttpClient()
