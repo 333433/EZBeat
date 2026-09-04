@@ -13,9 +13,9 @@ Imports System.Windows
 
 <Assembly: AssemblyTitle("EZBeat")>
 <Assembly: AssemblyDescription("")>
-<Assembly: AssemblyCompany("Skweeg")>
+<Assembly: AssemblyCompany("J-S")>
 <Assembly: AssemblyProduct("EZBeat")>
-<Assembly: AssemblyCopyright("Copyright © Skweeg 2026")>
+<Assembly: AssemblyCopyright("Copyright © J-S 2026")>
 <Assembly: AssemblyTrademark("")>
 <Assembly: ComVisible(false)>
 
@@ -55,5 +55,5 @@ Imports System.Windows
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")>
 
-<Assembly: AssemblyVersion("0.4.0.0")>
-<Assembly: AssemblyFileVersion("0.4.0.0")>
+<Assembly: AssemblyVersion("0.5.0.0")>
+<Assembly: AssemblyFileVersion("0.5.0.0")>
