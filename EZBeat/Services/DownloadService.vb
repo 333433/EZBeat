@@ -16,6 +16,7 @@ Namespace EZBeat.Services
         Private ReadOnly _soundcloudClient As SoundCloudClient
         Private ReadOnly _youtubeClient As YoutubeClient
         Private ReadOnly _settingsService As SettingsService
+        Private ReadOnly _streamResolver As SoundCloudStreamResolver
         Private ReadOnly _httpClient As HttpClient
 
         ' Collection bound to the UI
@@ -32,20 +33,22 @@ Namespace EZBeat.Services
         Public Event TrackProgressChanged(trackId As String, progress As Double)
         Public Event TrackStatusChanged(trackId As String, isDownloading As Boolean, isCompleted As Boolean)
 
-        Public Sub New(soundcloudClient As SoundCloudClient, youtubeClient As YoutubeClient, settingsService As SettingsService)
+        Public Sub New(soundcloudClient As SoundCloudClient,
+               youtubeClient As YoutubeClient,
+               settingsService As SettingsService,
+               streamResolver As SoundCloudStreamResolver)
             _soundcloudClient = soundcloudClient
             _youtubeClient = youtubeClient
             _settingsService = settingsService
+            _streamResolver = streamResolver
             _httpClient = New HttpClient()
+            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0")
 
             Downloads = New ObservableCollection(Of DownloadItem)()
             BindingOperations.EnableCollectionSynchronization(Downloads, _queueLock)
-
             GlobalFFOptions.Configure(Sub(options)
                                           options.BinaryFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Content")
                                       End Sub)
-
-            ' NEW: Load history on startup
             LoadHistory()
         End Sub
 
@@ -244,20 +247,38 @@ Namespace EZBeat.Services
         End Function
 
         Private Async Function DownloadSoundCloudToTemp(track As GenericTrack, tempBase As String, progress As IProgress(Of Double)) As Task(Of String)
-            Dim downloadUrl = Await _soundcloudClient.Tracks.GetDownloadUrlAsync(track.Url)
-            If String.IsNullOrEmpty(downloadUrl) Then Throw New Exception("No download URL.")
-
+            Dim stream = Await _streamResolver.GetStreamAsync(track.Url)
             Dim tempPath = $"{tempBase}.mp3"
-            Using response = Await _httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead)
+
+            If stream.IsHls Then
+                ' HLS-only track: let FFmpeg fetch and assemble the segments into an MP3
+                Dim ok = Await FFMpegArguments _
+            .FromUrlInput(New Uri(stream.Url)) _
+            .OutputToFile(tempPath, True, Sub(options) options.ForceFormat("mp3")) _
+            .ProcessAsynchronously()
+
+                If Not ok OrElse Not File.Exists(tempPath) Then
+                    Throw New Exception("Failed to convert the HLS stream.")
+                End If
+
+                progress.Report(1) ' 100%
+                Return tempPath
+            End If
+
+            ' Progressive track: download the MP3 directly
+            Using response = Await _httpClient.GetAsync(stream.Url, HttpCompletionOption.ResponseHeadersRead)
+                response.EnsureSuccessStatusCode()
                 Dim totalBytes = response.Content.Headers.ContentLength.GetValueOrDefault(-1L)
-                Using stream = Await response.Content.ReadAsStreamAsync(),
-                      fileStream = New FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None)
-                    Dim buffer(8192) As Byte
+
+                Using contentStream = Await response.Content.ReadAsStreamAsync(),
+              fileStream = New FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None)
+
+                    Dim buffer(8191) As Byte
                     Dim totalRead As Long = 0
                     Dim bytesRead As Integer
 
                     Do
-                        bytesRead = Await stream.ReadAsync(buffer, 0, buffer.Length)
+                        bytesRead = Await contentStream.ReadAsync(buffer, 0, buffer.Length)
                         If bytesRead = 0 Then Exit Do
 
                         Await fileStream.WriteAsync(buffer, 0, bytesRead)
