@@ -247,6 +247,7 @@
     <Compile Include="Models\UpdateInfo.vb" />
     <Compile Include="Services\DialogServices.vb" />
     <Compile Include="Services\GlobalHotKeyService.vb" />
+    <Compile Include="Services\SoundCloudStreamResolver.vb" />
     <Compile Include="Services\UpdateService.vb" />
     <Compile Include="ViewModels\UpdateViewModel.vb" />
     <Compile Include="Views\ConfirmationDialog.xaml.vb">

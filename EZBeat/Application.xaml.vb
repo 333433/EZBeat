@@ -24,6 +24,7 @@ Partial Public Class Application
         services.AddSingleton(New SoundCloudClient(clientId))
         services.AddSingleton(New YoutubeClient())
 
+        services.AddSingleton(New SoundCloudStreamResolver(clientId))
         services.AddSingleton(Of SearchService)()
         services.AddSingleton(Of AudioService)()
         services.AddSingleton(Of SettingsService)()
